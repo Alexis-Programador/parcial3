@@ -1,9 +1,9 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.Statement;
+import java.sql.PreparedStatement;
 import java.util.Scanner;
 
-public class SqlInjectionExample {
+public class SecureSQLExample {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
@@ -18,14 +18,14 @@ public class SqlInjectionExample {
                 "password"
             );
 
-            Statement stmt = conn.createStatement();
+            String query = "SELECT * FROM users WHERE username = ?";
 
-            // Vulnerable query
-            String query = "SELECT * FROM users WHERE username = '" + username + "'";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setString(1, username);
 
-            stmt.executeQuery(query);
+            stmt.executeQuery();
 
-            System.out.println("Query executed");
+            System.out.println("Query executed safely");
 
         } catch (Exception e) {
             e.printStackTrace();
