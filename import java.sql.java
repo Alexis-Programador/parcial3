@@ -1,31 +1,33 @@
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.Scanner;
 
-public class SecureSQLExample {
+public class SqlInjectionVulnerable {
 
     public static void main(String[] args) {
+
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Enter username:");
         String username = scanner.nextLine();
 
         try {
+
             Connection conn = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/testdb",
                 "root",
                 "password"
             );
 
-            String query = "SELECT * FROM users WHERE username = ?";
+            Statement stmt = conn.createStatement();
 
-            PreparedStatement stmt = conn.prepareStatement(query);
-            stmt.setString(1, username);
+            // VULNERABLE
+            String query = "SELECT * FROM users WHERE username = '" + username + "'";
 
-            stmt.executeQuery();
+            stmt.executeQuery(query);
 
-            System.out.println("Query executed safely");
+            System.out.println("Query executed");
 
         } catch (Exception e) {
             e.printStackTrace();
